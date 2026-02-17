@@ -1,0 +1,24 @@
+{
+  "name": "recenzija-mk",
+  "version": "1.0.0",
+  "description": "Implementation of open source software finki",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefantrajanov/recenzija-mk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stefantrajanov/recenzija-mk/issues"
+  },
+  "homepage": "https://github.com/stefantrajanov/recenzija-mk#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
