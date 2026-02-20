@@ -1,14 +1,14 @@
-import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
-import { ArrowLeft, MapPin, Tag, DollarSign } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Button } from '@/components/ui/button'
-import { StarRating } from '@/components/star-rating'
 import { ReviewCard } from '@/components/review-card'
 import { ReviewForm } from '@/components/review-form'
-import { getBusinessById, getReviewsByBusinessId } from '@/lib/api'
+import { StarRating } from '@/components/star-rating'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { Link } from '@/i18n/routing'
+import { getBusinessById, getReviewsByBusinessId } from '@/lib/api'
+import { ArrowLeft, DollarSign, MapPin, Tag } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 
 export default async function BusinessPage({
     params,
@@ -137,6 +137,8 @@ export default async function BusinessPage({
                         <ReviewForm
                             businessId={business.id}
                             translations={{
+                                yourName: reviewT('yourName'),
+                                namePlaceholder: reviewT('namePlaceholder'),
                                 yourRating: reviewT('yourRating'),
                                 yourReview: reviewT('yourReview'),
                                 placeholder: reviewT('placeholder'),

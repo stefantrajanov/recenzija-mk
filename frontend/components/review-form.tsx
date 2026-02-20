@@ -1,23 +1,27 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { StarRating } from '@/components/star-rating'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { submitReview } from '@/lib/api'
+import { useState } from 'react'
 
 interface ReviewFormProps {
-    businessId: string
+    businessId: number
     translations: {
+        yourName: string
         yourRating: string
         yourReview: string
         placeholder: string
+        namePlaceholder: string
         submit: string
         thankYou: string
     }
 }
 
 export function ReviewForm({ businessId, translations }: ReviewFormProps) {
+    const [authorName, setAuthorName] = useState('')
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -25,18 +29,20 @@ export function ReviewForm({ businessId, translations }: ReviewFormProps) {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        if (rating === 0 || !comment.trim()) return
+        if (rating === 0 || !comment.trim() || !authorName.trim()) return
 
         setIsSubmitting(true)
         try {
             await submitReview({
                 businessId,
+                authorName: authorName.trim(),
                 rating,
                 comment: comment.trim(),
             })
             setSubmitted(true)
             setRating(0)
             setComment('')
+            setAuthorName('')
         } finally {
             setIsSubmitting(false)
         }
@@ -55,6 +61,15 @@ export function ReviewForm({ businessId, translations }: ReviewFormProps) {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+                <label className="text-sm font-medium">{translations.yourName}</label>
+                <Input
+                    type="text"
+                    placeholder={translations.namePlaceholder}
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                />
+            </div>
+            <div className="space-y-2">
                 <label className="text-sm font-medium">{translations.yourRating}</label>
                 <StarRating rating={rating} size="lg" interactive onRatingChange={setRating} />
             </div>
@@ -70,7 +85,7 @@ export function ReviewForm({ businessId, translations }: ReviewFormProps) {
             </div>
             <Button
                 type="submit"
-                disabled={rating === 0 || !comment.trim() || isSubmitting}
+                disabled={rating === 0 || !comment.trim() || !authorName.trim() || isSubmitting}
                 className="w-full"
             >
                 {isSubmitting ? '...' : translations.submit}

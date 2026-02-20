@@ -42,6 +42,8 @@
         "closed": "Closed"
     },
     "review": {
+        "yourName": "Your Name",
+        "namePlaceholder": "Enter your name...",
         "yourRating": "Your Rating",
         "yourReview": "Your Review",
         "placeholder": "Share your experience...",

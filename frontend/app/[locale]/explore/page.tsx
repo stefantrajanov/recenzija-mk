@@ -1,9 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { Search } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
-import { useTranslations, useLocale } from 'next-intl'
+import { BusinessCard } from '@/components/business-card'
 import { Input } from '@/components/ui/input'
 import {
     Select,
@@ -12,9 +9,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { BusinessCard } from '@/components/business-card'
-import { Business, Category, SearchFilters } from '@/types/business'
 import { getBusinesses, getCategories } from '@/lib/api'
+import { Business, Category, SearchFilters } from '@/types/business'
+import { Search } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function ExplorePage() {
     const t = useTranslations('explore')
@@ -77,7 +77,7 @@ export default function ExplorePage() {
                         <SelectItem value="all">{t('allCategories')}</SelectItem>
                         {categories.map((cat) => (
                             <SelectItem key={cat.slug} value={cat.slug}>
-                                {locale === 'mk' ? cat.nameМк : cat.name}
+                                {locale === 'mk' ? cat.nameMk : cat.name}
                             </SelectItem>
                         ))}
                     </SelectContent>

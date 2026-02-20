@@ -1,7 +1,7 @@
-import { UtensilsCrossed, Coffee, Wrench, ShoppingBag, type LucideIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Category } from '@/types/business'
 import { Link } from '@/i18n/routing'
+import { Category } from '@/types/business'
+import { Coffee, ShoppingBag, UtensilsCrossed, Wrench, type LucideIcon } from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
     UtensilsCrossed,
@@ -18,7 +18,7 @@ interface CategoryCardProps {
 
 export function CategoryCard({ category, locale, businessCountLabel }: CategoryCardProps) {
     const Icon = iconMap[category.icon] ?? UtensilsCrossed
-    const displayName = locale === 'mk' ? category.nameМк : category.name
+    const displayName = locale === 'mk' ? category.nameMk : category.name
 
     return (
         <Link href={`/category/${category.slug}`}>

@@ -42,6 +42,8 @@
         "closed": "Затворено"
     },
     "review": {
+        "yourName": "Вашето име",
+        "namePlaceholder": "Внесете го вашето име...",
         "yourRating": "Вашата оценка",
         "yourReview": "Вашата рецензија",
         "placeholder": "Споделете го вашето искуство...",

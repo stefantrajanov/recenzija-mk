@@ -1,10 +1,10 @@
-import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { BusinessCard } from '@/components/business-card'
-import { getCategoryBySlug, getBusinesses } from '@/lib/api'
+import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/routing'
+import { getBusinesses, getCategoryBySlug } from '@/lib/api'
+import { ArrowLeft } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 
 export default async function CategoryPage({
     params,
@@ -30,7 +30,7 @@ export default async function CategoryPage({
         namespace: 'common',
     })
 
-    const displayName = locale === 'mk' ? category.nameМк : category.name
+    const displayName = locale === 'mk' ? category.nameMk : category.name
 
     return (
         <div className="mx-auto max-w-6xl px-4 py-8">

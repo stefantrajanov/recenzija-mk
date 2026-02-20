@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { StarRating } from '@/components/star-rating'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Review } from '@/types/business'
 
 interface ReviewCardProps {
@@ -28,13 +28,13 @@ export function ReviewCard({ review }: ReviewCardProps) {
         <div className="border-border/50 flex gap-4 border-b py-5 last:border-b-0">
             <Avatar className="h-10 w-10 shrink-0">
                 <AvatarFallback className="bg-slate-100 text-sm font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                    {getInitials(review.userName)}
+                    {getInitials(review.authorName)}
                 </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-1.5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">{review.userName}</span>
+                        <span className="text-sm font-semibold">{review.authorName}</span>
                         <StarRating rating={review.rating} size="sm" />
                     </div>
                     <span className="text-muted-foreground text-xs">

@@ -1,5 +1,5 @@
 export interface Business {
-    id: string
+    id: number
     placeId: string
     name: string
     address: string
@@ -8,21 +8,20 @@ export interface Business {
     rating: number
     reviewCount: number
     priceLevel: number | null
-    photoUrl: string
+    photoUrl: string | null
     location: {
         lat: number
         lng: number
     }
     openNow: boolean | null
-    description: string
+    description: string | null
+    distance?: number
 }
 
 export interface Review {
-    id: string
-    businessId: string
-    userId: string
-    userName: string
-    userAvatar: string | null
+    id: number
+    businessId: number
+    authorName: string
     rating: number
     comment: string
     createdAt: string
@@ -31,7 +30,7 @@ export interface Review {
 export interface Category {
     slug: string
     name: string
-    nameМк: string
+    nameMk: string
     icon: string
     count: number
 }
@@ -43,7 +42,8 @@ export interface SearchFilters {
 }
 
 export interface ReviewFormData {
-    businessId: string
+    businessId: number
+    authorName: string
     rating: number
     comment: string
 }

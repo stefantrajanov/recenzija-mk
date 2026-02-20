@@ -1,98 +1,147 @@
-import { mockBusinesses, mockCategories, mockReviews } from './mock-data'
 import { Business, Category, Review, ReviewFormData, SearchFilters } from '@/types/business'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000'
+
 /**
- * API layer for fetching business and review data.
- * Currently uses mock data. Replace implementations with actual
- * Laravel API calls when the backend is ready.
- *
- * Base URL placeholder: process.env.NEXT_PUBLIC_API_URL
+ * API layer — fetches data from the Laravel backend.
  */
 
+interface PaginatedResponse<T> {
+    data: T[]
+    meta: {
+        current_page: number
+        last_page: number
+        total: number
+    }
+}
+
+interface SingleResponse<T> {
+    data: T
+}
+
+// ─── Businesses ─────────────────────────────────────────
+
 export async function getBusinesses(filters?: SearchFilters): Promise<Business[]> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    const params = new URLSearchParams()
 
-    let results = [...mockBusinesses]
+    if (filters?.query) params.set('q', filters.query)
+    if (filters?.category) params.set('category', filters.category)
+    if (filters?.sortBy) params.set('sort', filters.sortBy)
+    params.set('per_page', '50')
 
-    if (filters?.query) {
-        const query = filters.query.toLowerCase()
-        results = results.filter(
-            (b) =>
-                b.name.toLowerCase().includes(query) ||
-                b.address.toLowerCase().includes(query) ||
-                b.category.toLowerCase().includes(query)
-        )
-    }
+    const res = await fetch(`${API_URL}/api/businesses?${params.toString()}`, {
+        next: { revalidate: 60 },
+    })
 
-    if (filters?.category) {
-        results = results.filter((b) => b.categorySlug === filters.category)
-    }
+    if (!res.ok) return []
 
-    if (filters?.sortBy) {
-        switch (filters.sortBy) {
-            case 'rating':
-                results.sort((a, b) => b.rating - a.rating)
-                break
-            case 'reviews':
-                results.sort((a, b) => b.reviewCount - a.reviewCount)
-                break
-            case 'name':
-                results.sort((a, b) => a.name.localeCompare(b.name))
-                break
-        }
-    }
-
-    return results
+    const json: PaginatedResponse<Business> = await res.json()
+    return json.data
 }
 
 export async function getBusinessById(id: string): Promise<Business | null> {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return mockBusinesses.find((b) => b.id === id) ?? null
-}
+    const res = await fetch(`${API_URL}/api/businesses/${id}`, {
+        next: { revalidate: 60 },
+    })
 
-export async function getReviewsByBusinessId(businessId: string): Promise<Review[]> {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return mockReviews.filter((r) => r.businessId === businessId)
-}
+    if (!res.ok) return null
 
-export async function getCategories(): Promise<Category[]> {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return mockCategories
-}
-
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return mockCategories.find((c) => c.slug === slug) ?? null
+    const json: SingleResponse<Business> = await res.json()
+    return json.data
 }
 
 export async function getFeaturedBusinesses(): Promise<Business[]> {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return [...mockBusinesses].sort((a, b) => b.rating - a.rating).slice(0, 4)
+    const params = new URLSearchParams({
+        sort: 'rating',
+        per_page: '4',
+    })
+
+    const res = await fetch(`${API_URL}/api/businesses?${params.toString()}`, {
+        next: { revalidate: 60 },
+    })
+
+    if (!res.ok) return []
+
+    const json: PaginatedResponse<Business> = await res.json()
+    return json.data
+}
+
+export async function getNearbyBusinesses(
+    lat: number,
+    lng: number,
+    radius: number = 10
+): Promise<Business[]> {
+    const params = new URLSearchParams({
+        lat: lat.toString(),
+        lng: lng.toString(),
+        radius: radius.toString(),
+    })
+
+    const res = await fetch(`${API_URL}/api/businesses/nearby?${params.toString()}`, {
+        next: { revalidate: 60 },
+    })
+
+    if (!res.ok) return []
+
+    const json: { data: Business[] } = await res.json()
+    return json.data
+}
+
+// ─── Reviews ────────────────────────────────────────────
+
+export async function getReviewsByBusinessId(businessId: string): Promise<Review[]> {
+    const res = await fetch(`${API_URL}/api/businesses/${businessId}/reviews`, {
+        next: { revalidate: 0 },
+    })
+
+    if (!res.ok) return []
+
+    const json: { data: Review[] } = await res.json()
+    return json.data
 }
 
 export async function submitReview(data: ReviewFormData): Promise<Review> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    const res = await fetch(`${API_URL}/api/businesses/${data.businessId}/reviews`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify({
+            author_name: data.authorName,
+            rating: data.rating,
+            comment: data.comment,
+        }),
+    })
 
-    const newReview: Review = {
-        id: `r_${Date.now()}`,
-        businessId: data.businessId,
-        userId: 'current_user',
-        userName: 'Current User',
-        userAvatar: null,
-        rating: data.rating,
-        comment: data.comment,
-        createdAt: new Date().toISOString(),
+    if (!res.ok) {
+        throw new Error('Failed to submit review')
     }
 
-    // In production, POST to Laravel API:
-    // const res = await fetch(`${API_URL}/api/reviews`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(data),
-    // })
-    // return res.json()
+    const json: SingleResponse<Review> = await res.json()
+    return json.data
+}
 
-    return newReview
+// ─── Categories ─────────────────────────────────────────
+
+export async function getCategories(): Promise<Category[]> {
+    const res = await fetch(`${API_URL}/api/categories`, {
+        next: { revalidate: 60 },
+    })
+
+    if (!res.ok) return []
+
+    const json: { data: Category[] } = await res.json()
+    return json.data
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+    const res = await fetch(`${API_URL}/api/categories/${slug}`, {
+        next: { revalidate: 60 },
+    })
+
+    if (!res.ok) return null
+
+    const json: SingleResponse<Category> = await res.json()
+    return json.data
 }
