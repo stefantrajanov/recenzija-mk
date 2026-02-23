@@ -12,7 +12,7 @@ export default async function CategoryPage({
     params: Promise<{ locale: string; slug: string }>
 }) {
     const { locale, slug } = await params
-    const [category, businesses] = await Promise.all([
+    const [category, { data: businesses }] = await Promise.all([
         getCategoryBySlug(slug),
         getBusinesses({ category: slug }),
     ])

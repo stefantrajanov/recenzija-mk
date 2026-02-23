@@ -21,22 +21,26 @@ interface SingleResponse<T> {
 
 // ─── Businesses ─────────────────────────────────────────
 
-export async function getBusinesses(filters?: SearchFilters): Promise<Business[]> {
+export async function getBusinesses(
+    filters?: SearchFilters,
+    page: number = 1
+): Promise<{ data: Business[]; meta: PaginatedResponse<Business>['meta'] | null }> {
     const params = new URLSearchParams()
 
     if (filters?.query) params.set('q', filters.query)
     if (filters?.category) params.set('category', filters.category)
     if (filters?.sortBy) params.set('sort', filters.sortBy)
-    params.set('per_page', '50')
+    params.set('page', page.toString())
+    params.set('per_page', '20')
 
     const res = await fetch(`${API_URL}/api/businesses?${params.toString()}`, {
         next: { revalidate: 60 },
     })
 
-    if (!res.ok) return []
+    if (!res.ok) return { data: [], meta: null }
 
     const json: PaginatedResponse<Business> = await res.json()
-    return json.data
+    return { data: json.data, meta: json.meta }
 }
 
 export async function getBusinessById(id: string): Promise<Business | null> {

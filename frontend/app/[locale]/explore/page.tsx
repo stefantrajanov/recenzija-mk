@@ -1,6 +1,7 @@
 'use client'
 
 import { BusinessCard } from '@/components/business-card'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
     Select,
@@ -27,7 +28,24 @@ export default function ExplorePage() {
     const [query, setQuery] = useState(searchParams.get('q') ?? '')
     const [selectedCategory, setSelectedCategory] = useState('all')
     const [sortBy, setSortBy] = useState<SearchFilters['sortBy']>('rating')
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
     const [loading, setLoading] = useState(true)
+
+    const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value)
+        setPage(1)
+    }
+
+    const handleCategoryChange = (val: string) => {
+        setSelectedCategory(val)
+        setPage(1)
+    }
+
+    const handleSortChange = (val: string) => {
+        setSortBy(val as SearchFilters['sortBy'])
+        setPage(1)
+    }
 
     const fetchData = useCallback(async () => {
         setLoading(true)
@@ -37,19 +55,23 @@ export default function ExplorePage() {
             sortBy,
         }
         const [businessResult, categoryResult] = await Promise.all([
-            getBusinesses(filters),
+            getBusinesses(filters, page),
             getCategories(),
         ])
-        setBusinesses(businessResult)
-        setCategories(categoryResult)
+        setBusinesses(businessResult.data)
+        setTotalPages(businessResult.meta?.last_page || 1)
+
+        // Cache categories so they don't block subsequent pagination
+        if (categories.length === 0) {
+            setCategories(categoryResult)
+        }
+
         setLoading(false)
-    }, [query, selectedCategory, sortBy])
+    }, [query, selectedCategory, sortBy, page, categories.length])
 
     useEffect(() => {
-        const fetch = async () => {
-            await fetchData()
-        }
-        fetch()
+        const response = async () => fetchData()
+        response()
     }, [fetchData])
 
     return (
@@ -65,11 +87,11 @@ export default function ExplorePage() {
                         type="text"
                         placeholder={t('searchPlaceholder')}
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={handleQueryChange}
                         className="pl-10"
                     />
                 </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                     <SelectTrigger className="w-full sm:w-48">
                         <SelectValue placeholder={t('filterCategory')} />
                     </SelectTrigger>
@@ -82,10 +104,7 @@ export default function ExplorePage() {
                         ))}
                     </SelectContent>
                 </Select>
-                <Select
-                    value={sortBy}
-                    onValueChange={(v) => setSortBy(v as SearchFilters['sortBy'])}
-                >
+                <Select value={sortBy} onValueChange={handleSortChange}>
                     <SelectTrigger className="w-full sm:w-48">
                         <SelectValue placeholder={t('sortBy')} />
                     </SelectTrigger>
@@ -116,7 +135,7 @@ export default function ExplorePage() {
                     <p className="text-muted-foreground">{t('noResults')}</p>
                 </div>
             ) : (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {businesses.map((business) => (
                         <BusinessCard
                             key={business.id}
@@ -126,6 +145,37 @@ export default function ExplorePage() {
                             })}
                         />
                     ))}
+                </div>
+            )}
+
+            <div style={{ marginTop: '50px' }}></div>
+
+            {/* Pagination Controls */}
+            {!loading && totalPages > 1 && (
+                <div className="mt-16 flex items-center justify-center gap-4">
+                    <Button
+                        variant="outline"
+                        disabled={page === 1}
+                        onClick={() => {
+                            setPage(page - 1)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                    >
+                        {commonT('back')}
+                    </Button>
+                    <span className="text-muted-foreground text-sm font-medium">
+                        Page {page} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        disabled={page === totalPages}
+                        onClick={() => {
+                            setPage(page + 1)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                    >
+                        Next
+                    </Button>
                 </div>
             )}
         </div>

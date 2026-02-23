@@ -8,6 +8,7 @@ import { Link } from '@/i18n/routing'
 import { getBusinessById, getReviewsByBusinessId } from '@/lib/api'
 import { ArrowLeft, DollarSign, MapPin, Tag } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 export default async function BusinessPage({
@@ -46,11 +47,22 @@ export default async function BusinessPage({
 
             {/* Business Header */}
             <div className="space-y-4">
-                {/* Hero placeholder */}
-                <div className="flex h-48 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
-                    <span className="text-muted-foreground/20 text-7xl">
-                        {business.name.charAt(0)}
-                    </span>
+                {/* Hero */}
+                <div className="relative flex h-48 w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+                    {business.photoUrl ? (
+                        <Image
+                            src={business.photoUrl}
+                            alt={business.name}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 896px) 100vw, 896px"
+                            priority
+                        />
+                    ) : (
+                        <span className="text-muted-foreground/20 text-7xl">
+                            {business.name.charAt(0)}
+                        </span>
+                    )}
                 </div>
 
                 <div className="space-y-3">

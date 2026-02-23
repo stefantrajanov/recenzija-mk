@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { submitReview } from '@/lib/api'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface ReviewFormProps {
@@ -21,6 +22,7 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({ businessId, translations }: ReviewFormProps) {
+    const router = useRouter()
     const [authorName, setAuthorName] = useState('')
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
@@ -43,6 +45,7 @@ export function ReviewForm({ businessId, translations }: ReviewFormProps) {
             setRating(0)
             setComment('')
             setAuthorName('')
+            router.refresh()
         } finally {
             setIsSubmitting(false)
         }
