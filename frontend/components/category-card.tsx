@@ -1,13 +1,49 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Link } from '@/i18n/routing'
 import { Category } from '@/types/business'
-import { Coffee, ShoppingBag, UtensilsCrossed, Wrench, type LucideIcon } from 'lucide-react'
+import {
+    BedDouble,
+    Beer,
+    BookOpen,
+    Coffee,
+    Croissant,
+    Dumbbell,
+    Film,
+    Fuel,
+    Hospital,
+    Landmark,
+    Laptop,
+    Pill,
+    Scissors,
+    ShoppingBag,
+    ShoppingCart,
+    Stethoscope,
+    TreePine,
+    UtensilsCrossed,
+    Wrench,
+    type LucideIcon,
+} from 'lucide-react'
 
 const iconMap: Record<string, LucideIcon> = {
     UtensilsCrossed,
     Coffee,
     Wrench,
     ShoppingBag,
+    ShoppingCart,
+    Pill,
+    Dumbbell,
+    BedDouble,
+    Hospital,
+    Landmark,
+    Scissors,
+    Croissant,
+    Stethoscope,
+    Beer,
+    Laptop,
+    BookOpen,
+    TreePine,
+    Fuel,
+    Film,
 }
 
 interface CategoryCardProps {
